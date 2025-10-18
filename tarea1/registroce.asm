@@ -890,11 +890,11 @@ FIN_MOSTRAR_ENTERO:
 MOSTRAR_NUMERO_ENTERO ENDP
 
 ; ==========================================================================
-; RUTINAS DE ORDENAMIENTO
-; ==========================================================================
-
+; RUTINAS DE ORDENAMIENTO                                                    ;aca empieza el bubble sort
+; ========================================================================== ;queremos unicamente ordenar como se muestran los datos
+                                                                             ;no queremos mover los datos originales en memoria
 ; INICIALIZA ARRAY DE INDICES
-INICIALIZAR_INDICES PROC
+INICIALIZAR_INDICES PROC                                                   ;entonces se ordena un array de indices en vez de los datos reales
     PUSH CX
     PUSH SI
     MOV CL, 0           ; Contador
