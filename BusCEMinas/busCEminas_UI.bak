@@ -1,0 +1,110 @@
+#lang racket
+;; =========================================================
+;; Interfaz de alto nivel para el Buscaminas (UI/controller)
+;; Genera posiciones aleatorias y arma el tablero final
+;; =========================================================
+
+;; ===== OPCIÓN DE IMPORT (elige UNA) ======================
+;; Opción A) Si tu archivo de lógica exporta (provide ...):
+;; (require "buscaminas_logica.rkt")
+
+;; Opción B) Si tu archivo de lógica NO exporta, usa include:
+;; (ajusta el nombre según guardaste tu lógica)
+(include "busCEminas.rkt")
+;; =========================================================
+
+;; =========================================================
+;; Utilidades locales de la interfaz
+;; (evitan dependencias extra; no usan let/map/fold)
+;; =========================================================
+
+;; Comparar dos posiciones (f c)
+;; Entrada: p, q (cada uno como '(f c))
+;; Restricciones: ambas listas de 2 enteros
+;; Salida: #t si iguales, #f si distintas
+(define (posicion_igual_ui p q)
+  (cond
+    [(= (car p) (car q))
+     (cond
+       [(= (car (cdr p)) (car (cdr q))) #t]
+       [else #f])]
+    [else #f]))
+
+;; ¿pos está en la lista posiciones?
+;; Entrada: posiciones '((f c) ...), pos '(f c)
+;; Salida: #t si pertenece, #f si no
+(define (miembro_pos_ui posiciones pos)
+  (cond
+    [(null? posiciones) #f]
+    [(posicion_igual_ui (car posiciones) pos) #t]
+    [else (miembro_pos_ui (cdr posiciones) pos)]))
+
+;; Generar una nueva posición aleatoria (f c)
+;; Entrada: filas (>0), columnas (>0)
+;; Salida: '(f c) con 0 <= f < filas y 0 <= c < columnas
+(define (nueva_pos_aleatoria filas columnas)
+  (cons (random filas) (cons (random columnas) '())))
+
+;; Generar K posiciones únicas aleatorias dentro del rango
+;; Entrada: filas (>0), columnas (>0), k (>=0)
+;; Restricciones: k <= filas*columnas
+;; Salida: lista de tamaño k con pares '(f c) únicos y válidos
+(define (generar_posiciones_unicas filas columnas k)
+  (generar_posiciones_unicas_aux filas columnas k '()))
+
+(define (generar_posiciones_unicas_aux filas columnas k acumuladas)
+  (cond
+    [(zero? k) acumuladas]
+    [else
+     ;; generamos UN candidato y lo pasamos a un auxiliar que reintenta si ya existe
+     (generar_posiciones_unicas_aux2
+       filas columnas k acumuladas
+       (nueva_pos_aleatoria filas columnas))]))
+
+(define (generar_posiciones_unicas_aux2 filas columnas k acumuladas candidato)
+  (cond
+    [(miembro_pos_ui acumuladas candidato)
+     ;; si ya existe, intento con otro candidato (mismo k, mismas acumuladas)
+     (generar_posiciones_unicas_aux2
+       filas columnas k acumuladas
+       (nueva_pos_aleatoria filas columnas))]
+    [else
+     ;; si es nuevo, lo agrego y decremento k
+     (generar_posiciones_unicas_aux
+       filas columnas (- k 1)
+       (cons candidato acumuladas))]))
+
+;; =========================================================
+;; API de la interfaz
+;; =========================================================
+
+;; Crear un tablero completo (bombas + números) a partir de nivel.
+;; La interfaz:
+;;   1) pregunta a la lógica cuántas bombas poner,
+;;   2) genera exactamente K posiciones válidas aleatorias y únicas,
+;;   3) construye el tablero final con la lógica pura.
+;;
+;; Entrada: filas (>0), columnas (>0), nivel (1..3)
+;; Restricciones: nivel ∈ {1,2,3}; filas·columnas >= K
+;; Salida: tablero (lista de listas) con 9 en bombas y números alrededor
+(define (crear_tablero_juego filas columnas nivel)
+  (crear_tablero_completo_desde_bombas
+    filas
+    columnas
+    (generar_posiciones_unicas
+      filas
+      columnas
+      (calcular_bombas filas columnas nivel))))
+
+;; =========================================================
+;; Ejemplo de uso (comentado)
+;; =========================================================
+;; (define filas  8)
+;; (define columnas 10)
+;; (define nivel 2) ; 15%
+;; (define tablero (crear_tablero_juego filas columnas nivel))
+;; (imprimir_tablero tablero)
+;;
+;; Sugerencia: si quieres tableros reproducibles, llama primero:
+;; (random-seed 12345)
+;; y luego (crear_tablero_juego ...). 
