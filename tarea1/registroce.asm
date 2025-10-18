@@ -7,7 +7,7 @@
 MI1 DB 13,10,"Bienvenidos a RegistroCE$"  ;MI1 es la etiqueta, DB es define Byte
 MI2 DB 13,10,"1. Ingresar calificaciones$"    ;13,10 secuencia CRLF carriage return+line feed
 MI3 DB 13,10,"2. Mostrar estadisticas$"       ;13 = retorno de carro(mover cursor al inicio de linea), 10:nueva linea (mover cursos a siguiente linea)
-MI4 DB 13,10,"3. Buscar estudiante$"          ;$ = Marca el fin del string para la función 09h de INT 21h
+MI4 DB 13,10,"3. Buscar estudiante$"          ;$ = Marca el fin del string para la funciÃ³n 09h de INT 21h
 MI5 DB 13,10,"4. Ordenar calificaciones$"
 MI6 DB 13,10,"5. Salir$"
 MSJ DB 13,10,"Digite opcion: $"
@@ -447,7 +447,7 @@ MOSTRAR_ESTUDIANTE_COMPLETO ENDP
 
 ; RUTINA PARA LEER ENTRADA COMPLETA DESDE TECLADO
 LEER_ENTRADA_COMPLETA PROC
-    MOV DI, OFFSET buffer  ;DI es Destination Index que señala donde guardar en el buffer, el buffer son 100 bytes inicializados como $
+    MOV DI, OFFSET buffer  ;DI es Destination Index que seÃ±ala donde guardar en el buffer, el buffer son 100 bytes inicializados como $
     MOV CX, 99             ; Maximo 99 caracteres a leer, se deja 1 byte para el $ al final.
                            ;actualmente DI apunta al inicio del buffer.
 LEER_ENTRADA:
@@ -476,7 +476,7 @@ CONTINUAR_LECTURA:                                                             ;
     
 FIN_LECTURA:
     MOV BYTE PTR [DI], '$' ; Termina string
-    CLC                    ; Clear carry flag (éxito)
+    CLC                    ; Clear carry flag (Ã©xito)
     RET
 LEER_ENTRADA_COMPLETA ENDP
 
@@ -574,7 +574,7 @@ token_completo:
     JMP fin_leer_token
     
 token_valido:
-    CLC                    ; Clear carry flag (éxito)
+    CLC                    ; Clear carry flag (Ã©xito)
     INC DI                 ; Avanza al siguiente caracter
     
 fin_leer_token:
@@ -623,7 +623,7 @@ token_completo_nota:
     JMP fin_leer_token_nota
     
 token_valido_nota:
-    CLC                    ; Clear carry flag (éxito)
+    CLC                    ; Clear carry flag (Ã©xito)
     INC DI                 ; Avanza al siguiente caracter
     
 fin_leer_token_nota:
@@ -784,7 +784,7 @@ GUARDAR_NOTA:
     ; Guarda parte decimal (x10000)
     MOV [SI + NOTA_DECIMAL_OFFSET], AX
     
-    CLC              ; Clear carry flag (éxito)
+    CLC              ; Clear carry flag (Ã©xito)
     JMP FIN_CONVERTIR_NOTA
 
 ERROR_NOTA:
@@ -800,7 +800,7 @@ FIN_CONVERTIR_NOTA:
 CONVERTIR_NOTA_CON_DECIMALES ENDP
 
 ; ==========================================================================
-; RUTINA PARA MOSTRAR NÚMERO CON DECIMALES
+; RUTINA PARA MOSTRAR NÃšMERO CON DECIMALES
 ; ==========================================================================
 MOSTRAR_NUMERO_CON_DECIMALES PROC
     PUSH AX
@@ -820,7 +820,7 @@ MOSTRAR_NUMERO_CON_DECIMALES PROC
     
     ; Muestra parte decimal (4 digitos siempre)
     MOV AX, [SI + NOTA_DECIMAL_OFFSET]
-    MOV CX, 4          ; Mostrar 4 dígitos 
+    MOV CX, 4          ; Mostrar 4 dÃ­gitos 
     MOV BX, 10
     
     ; Convierte a dagitos individuales
@@ -848,7 +848,7 @@ FIN_MOSTRAR:
 MOSTRAR_NUMERO_CON_DECIMALES ENDP
 
 ; ==========================================================================
-; RUTINA PARA MOSTRAR NÚMERO ENTERO
+; RUTINA PARA MOSTRAR NÃšMERO ENTERO
 ; ==========================================================================
 MOSTRAR_NUMERO_ENTERO PROC
     PUSH AX
@@ -897,10 +897,10 @@ MOSTRAR_NUMERO_ENTERO ENDP
 INICIALIZAR_INDICES PROC                                                   ;entonces se ordena un array de indices en vez de los datos reales
     PUSH CX
     PUSH SI
-    MOV CL, 0           ; Contador
-    MOV SI, 0           ; indice en array
+    MOV CL, 0           ; CL = contador (empezamos en 0)
+    MOV SI, 0           ;SI = posiciÃ³n en el array de Ã­ndices
 INICIALIZAR_LOOP:
-    CMP CL, contador    ; Verifica si llegamos al final
+    CMP CL, contador    ; Verifica si ya procesamos todas los estudiantes.
     JAE FIN_INICIALIZAR
     MOV indices[SI], CL ; Almacena indice
     INC SI              ; Siguiente posicion
@@ -1632,6 +1632,7 @@ MOSTRAR_NOTA_CON_DECIMALES ENDP
 ; VARIABLE TEMPORAL PARA PORCENTAJES
 ; ==========================================================================
 porcentaje_temp dw 0
+
 
 
 END MAIN
